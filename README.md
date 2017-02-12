@@ -15,7 +15,7 @@
 
 <h2>Introduction</h2>
 
-<p>This project is based on the Led-8x8 project in the 2x2X8x8 configuration but it uses an IR sensor (NEC protocol) instead of a button for switching between animations. Also speed and the brightness of some animations can be set with the IR control.</p>
+<p>This project is based on the Led-8x8 project in the 2x2X8x8 configuration but it uses an <a href="images/RemoteControl.en.svg">IR control (NEC protocol)</a> instead of a button for switching between animations. Also speed and the brightness of some animations can be set with the IR control.</p>
 
 <h2>License</h2>
 <p><a href="LICENSE.md">MIT License</a></p>
