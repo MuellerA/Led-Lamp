@@ -1,7 +1,7 @@
 <h1>LED Lamp</h1>
 <table>
 <tr><th>Date</th><td>2016-12</td></tr>
-<tr><th>Tool Version</th><td>Arduino IDE 1.6.12 (Windows) (avrdude 6.3, avr-gcc 4.9.2)</td></tr>
+<tr><th>Tool Version</th><td>avrdude 6.3, avr-gcc 4.9.2</td></tr>
 <tr><th>Keywords</th><td>LED, WS2812, IR Control, ATtiny85</td></tr>
 </table>
 
@@ -42,7 +42,7 @@
 <ul>
   <li>To upload the hex file to the ATtiny85 with an Arduino Uno board as programmer follow the instructions on http://highlowtech.org/?p=1695 'connecting an Arduino (as ISP) to an ATtiny'</li>
   <li>Run 'make Upload' to upload the hex file</li>
-  <li>Run 'make BurnFuse' to make the ATtiny85 using an external clock source. Warning: After burning the Fuse you cannot use the ATtiny85 without an external clock (not even reprogram to clear the fuse)!</li>
+  <li>Run 'make Fuses' to make the ATtiny85 using an external clock source. Warning: After burning the Fuse you cannot use the ATtiny85 without an external clock (not even reprogram to clear the fuse)!</li>
   <li>Setup the ATtiny85, 20MHz oscillator, two 22pF capacitors, 470uF capacitor, 10uF capacitor, 38kHz IR sensor and the LED matrix as shown in the <a href="images/Led-8x8.sch.svg">schematic</a>.</li>
 </ul>
 

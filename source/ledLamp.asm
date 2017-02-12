@@ -5,7 +5,7 @@
 ;;; ========================================================================
 
 	.include "settings.inc"
-	
+
 ;;; ========================================================================
 ;;; Register
 ;;; ========================================================================
@@ -91,7 +91,7 @@ ISR_INT0_CodeToCmd:
 	.byte   13, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff ; d0
 	.byte   12, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff ; e0
 	.byte 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff ; f0
-	
+
 .elseif IRprotocol == IRprotocolNEC
 
 	IrHdrMark   = 9000
@@ -121,7 +121,7 @@ ISR_INT0_CodeToCmd:
 	.byte 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff ; d0
 	.byte   13, 0xff,   10, 0xff, 0xff, 0xff, 0xff, 0xff,   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff ; e0
 	.byte 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff ; f0
-	
+
 .endif
 
 	.global ISR_INT0
@@ -154,8 +154,8 @@ ISR_INT0:
 	push ZH
 	in _SREG, SREG
 
-	ldiw YL, MemInt0
-	ldd _State, Y + MemInt0State
+	ldiw YL, maInt0
+	ldd _State, Y + moInt0State
 
 ISR_INT0_0:
 	cpi _State, 0x00
@@ -247,18 +247,18 @@ ISR_INT0_Error:
 	rjmp ISR_INT0_Success
 
 ISR_INT0_ShiftBit:
-	ldd 24, Y + MemInt0B0
+	ldd 24, Y + moInt0B0
 	rol 24
-	std Y + MemInt0B0, 24
-	ldd 24, Y + MemInt0B1
+	std Y + moInt0B0, 24
+	ldd 24, Y + moInt0B1
 	rol 24
-	std Y + MemInt0B1, 24
-	ldd 24, Y + MemInt0B2
+	std Y + moInt0B1, 24
+	ldd 24, Y + moInt0B2
 	rol 24
-	std Y + MemInt0B2, 24
-	ldd 24, Y + MemInt0B3
+	std Y + moInt0B2, 24
+	ldd 24, Y + moInt0B3
 	rol 24
-	std Y + MemInt0B3, 24
+	std Y + moInt0B3, 24
 
 ISR_INT0_Success:
 	inc _State
@@ -266,16 +266,16 @@ ISR_INT0_Success:
 	cpi _State, 68
 	brne ISR_INT0_Success1
 
-	ldd 24, Y + MemInt0B3
+	ldd 24, Y + moInt0B3
 	cpi 24, IrByte3
 	brne ISR_INT0_Error	; unknown command
 
-	ldd 24, Y + MemInt0B2
+	ldd 24, Y + moInt0B2
 	cpi 24, IrByte2
 	brne ISR_INT0_Error	; unknown command
 
-	ldd 24, Y + MemInt0B1
-	ldd 25, Y + MemInt0B0
+	ldd 24, Y + moInt0B1
+	ldd 25, Y + moInt0B0
 	eor 25, 24
 	cpi 25, 0xff
 	brne ISR_INT0_Error	; unknown command
@@ -299,7 +299,7 @@ ISR_INT0_Success:
 	rjmp MainInt0
 
 ISR_INT0_Success1:
-	std Y + MemInt0State, _State
+	std Y + moInt0State, _State
 
 	out SREG, _SREG
 	pop ZH
@@ -337,7 +337,7 @@ ISR_TIMER0:
 	push ZH
 	in _SREG, SREG
 
-	ldiw ZL, MemTickCnt
+	ldiw ZL, maTickCnt
 	ldd 24, Z+0		; cnt now
 	ldd 25, Z+1
 	ldd 22, Z+2		; cnt prev
@@ -385,7 +385,7 @@ GetTickCnt:
 
 	cli
 
-	ldiw ZL, MemTickCnt
+	ldiw ZL, maTickCnt
 	ldd 24, Z+0		; now
 	ldd 25, Z+1
 	ldd 22, Z+2		; prev
@@ -402,7 +402,7 @@ GetTickCnt:
 ;;; ========================================================================
 StartTimer:
 	clr 24
-	ldiw ZL, MemTickCnt
+	ldiw ZL, maTickCnt
 	st Z+, 24		; now
 	st Z+, 24
 	st Z+, 24		; prev
@@ -437,24 +437,24 @@ Main:
  cbi DbgPrt, DbgIdx
 
 	clr _Zero
-	ldiw YL, MemMain
+	ldiw YL, maMain
 
 	movw 24, YL
 	rcall ParamLoad
 	movw 24, YL
 	rcall ParamFix
 
-	ldd 24, Y + MemMainFuncSelNo
+	ldd 24, Y + moMainFuncSelNo
 	mov _Cmd, 24
 	com 24
-	std Y + MemMainFuncSelNoPrev, 24
-	
+	std Y + moMainFuncSelNoPrev, 24
+
 MainInt0:
-	ldiw YL, MemMain
-	ldiw _LedMatrixAddrLo, MemLedMatrixAddr ; LedMatrix RAM address
+	ldiw YL, maMain
+	ldiw _LedMatrixAddrLo, maLedMatrixAddr ; LedMatrix RAM address
 
 	clr 24			; reset Int0 States
-	ldiw ZL, MemInt0
+	ldiw ZL, maInt0
 	st Z+, 24
 	st Z+, 24
 	st Z+, 24
@@ -473,7 +473,7 @@ MainInt0:
 	ldiw 24, 0x0100
 	rcall Delay
 	rjmp MainCmdEnd
-MainInt01:	
+MainInt01:
 	ldip ZL, MainCmdJmpTab
 	add ZL, 24
 	adc ZH, _Zero
@@ -500,27 +500,25 @@ MainCmdJmpTab:
 	rjmp MainCmdLoad	; CH  17
 
 MainCmdN:
-	std Y + MemMainFuncSelNo, _Cmd
+	std Y + moMainFuncSelNo, _Cmd
 
 MainCmdNewFunc:
 	ldiw ZL, MainFuncTable
-	ldd 24, Y + MemMainFuncSelNo
-	ldd 25, Y + MemMainFuncSelNoPrev
+	ldd 24, Y + moMainFuncSelNo
+	ldd 25, Y + moMainFuncSelNoPrev
 	cp 24, 25
 	brne MainCmdNewFunc1
 	ldi 24, 0x01		; green
 	ldi 22, 0x04		; square
 	rjmp MainCmdBlink
-MainCmdNewFunc1:	
-	std Y + MemMainFuncSelNoPrev, 24
+MainCmdNewFunc1:
+	std Y + moMainFuncSelNoPrev, 24
 	lsl 24			; 24 = 2*Idx
 	lsl 24			; 24 = 4*Idx
 	lsl 24			; 24 = 8*Idx = MainFuncTableEntrySize*Idx
 
 	add ZL, 24
 	adc ZH, _Zero
-	std Y + MemMainFuncSelLo, ZL	; Z points to MainFuncTable entry, store in MemFuncSel
-	std Y + MemMainFuncSelHi, ZH
 
 	lpm 24, Z+		; get constructor
 	lpm 25, Z+
@@ -532,99 +530,99 @@ MainCmdNewFunc1:
 	lpm _FnConfig+1, Z+	; Config(int type, int value)
 
 	movw ZL, 24
-	movw r24, _LedMatrixAddrLo
+	movw 24, _LedMatrixAddrLo
 	icall			; call constructor (with parameters)
 
 	movw 24, _LedMatrixAddrLo
-	ldi  22, ConfigBrightness
-	ldd 20, Y + MemMainBrightness
+	ldi 22, ConfigBrightness
+	ldd 20, Y + moMainBrightness
 	movw ZL, _FnConfig
 	icall			; call <class>::Config(ConfigBrightness, brightness)
 
 	rjmp MainCmdEnd
 
 MainCmdProgUp:
-	ldd 24, Y + MemMainFuncSelNo
+	ldd 24, Y + moMainFuncSelNo
 	cpi 24, MainFuncTableSize - 1
 	brne MainCmdProgUp1
 
 	ldi 24, 0x00
-	std Y + MemMainFuncSelNo, 24
+	std Y + moMainFuncSelNo, 24
 	rjmp MainCmdNewFunc
 MainCmdProgUp1:
 	inc 24
-	std Y + MemMainFuncSelNo, 24
+	std Y + moMainFuncSelNo, 24
 	rjmp MainCmdNewFunc
 
 MainCmdProgDown:
-	ldd 24, Y + MemMainFuncSelNo
+	ldd 24, Y + moMainFuncSelNo
 	cpi 24, 0x00
 	brne MainCmdProgDown1
 
 	ldi 24, MainFuncTableSize - 1
-	std Y + MemMainFuncSelNo, 24
+	std Y + moMainFuncSelNo, 24
 	rjmp MainCmdNewFunc
 MainCmdProgDown1:
 	dec 24
-	std Y + MemMainFuncSelNo, 24
+	std Y + moMainFuncSelNo, 24
 	rjmp MainCmdNewFunc
 
 MainCmdSpeedUp:
-	ldd 24, Y + MemMainDelayLo
-	ldd 25, Y + MemMainDelayHi
+	ldd 24, Y + moMainDelayLo
+	ldd 25, Y + moMainDelayHi
 
 	cpi 24, 0x40		; min == 0x0040
 	brne MainCmdSpeedUp1
 	ldi 24, 0x00 		; red
 	ldi 22, 0x01 		; right
 	rjmp MainCmdBlink
-MainCmdSpeedUp1:	
+MainCmdSpeedUp1:
 	lsr 25
 	ror 24
 
-	std Y + MemMainDelayLo, 24
-	std Y + MemMainDelayHi, 25
+	std Y + moMainDelayLo, 24
+	std Y + moMainDelayHi, 25
 
 	ldi 24, 0x01 		; green
 	ldi 22, 0x01 		; right
 	rjmp MainCmdBlink
 
 MainCmdSpeedDown:
-	ldd 24, Y + MemMainDelayLo
-	ldd 25, Y + MemMainDelayHi
+	ldd 24, Y + moMainDelayLo
+	ldd 25, Y + moMainDelayHi
 
 	cpi 25, 0x80		; max = 0x8000
 	brne MainCmdSpeedDown1
 	ldi 24, 0x00		; red
 	ldi 22, 0x00		; left
 	rjmp MainCmdBlink
-MainCmdSpeedDown1:	
+MainCmdSpeedDown1:
 	lsl 24
 	rol 25
 
-	std Y + MemMainDelayLo, 24
-	std Y + MemMainDelayHi, 25
+	std Y + moMainDelayLo, 24
+	std Y + moMainDelayHi, 25
 
 	ldi 24, 0x01		; green
 	ldi 22, 0x00		; left
 	rjmp MainCmdBlink
 
 MainCmdBrightUp:
-	ldd 24, Y + MemMainBrightness
+	ldd 24, Y + moMainBrightness
 
 	cpi 24, 0xff		; max = 0xff
 	brne MainCmdBrightUp1
 	ldi 24, 0x00		; red
 	ldi 22, 0x02		; top
 	rjmp MainCmdBlink
-MainCmdBrightUp1:	
+MainCmdBrightUp1:
 	subi 24, 0xf0		; addi 24, 0x10
 
-	std Y + MemMainBrightness, 24
+	std Y + moMainBrightness, 24
 
 	movw 24, _LedMatrixAddrLo
 	ldi 22, ConfigBrightness
-	ldd 20, Y + MemMainBrightness
+	ldd 20, Y + moMainBrightness
 	movw ZL, _FnConfig
 	icall			; call <class>::Config(ConfigBrightness, brightness)
 
@@ -633,21 +631,21 @@ MainCmdBrightUp1:
 	rjmp MainCmdBlink
 
 MainCmdBrightDown:
-	ldd 24, Y + MemMainBrightness
+	ldd 24, Y + moMainBrightness
 
-	cpi 24, 0x1f		; min = 0x2f
+	cpi 24, 0x1f		; min = 0x1f
 	brne MainCmdBrightDown1
 	ldi 24, 0x00		; red
 	ldi 22, 0x03		; bottom
 	rjmp MainCmdBlink
-MainCmdBrightDown1:	
+MainCmdBrightDown1:
 	subi 24, 0x10
 
-	std Y + MemMainBrightness, 24
+	std Y + moMainBrightness, 24
 
 	movw 24, _LedMatrixAddrLo
 	ldi 22, ConfigBrightness
-	ldd 20, Y + MemMainBrightness
+	ldd 20, Y + moMainBrightness
 	movw ZL, _FnConfig
 	icall			; call <class>::Config(ConfigBrightness, brightness)
 
@@ -672,7 +670,7 @@ MainCmdLoad:
 	rcall ParamLoad
 	movw 24, YL
 	rcall ParamFix
-	
+
 	rjmp MainCmdNewFunc
 
 MainCmdBlink:			; 24: col, 22: mode
@@ -680,7 +678,7 @@ MainCmdBlink:			; 24: col, 22: mode
 
 	ldiw 24, 0x0800
 	rcall Delay
-	
+
 	movw 24, _LedMatrixAddrLo
 	ldi  22, ConfigForceRedraw
 	ldi  20, 0x00
@@ -688,11 +686,11 @@ MainCmdBlink:			; 24: col, 22: mode
 	icall			; call <class>::Config(ConfigForceRedraw, dummy)
 
 MainCmdEnd:
-	
+
 	sei
 
 MainLoop:
-	lds 24, MemInt0 + MemInt0State
+	lds 24, maInt0 + moInt0State
 	tst 24
 	brne MainLoopDelay
 
@@ -706,8 +704,8 @@ MainLoop:
 
 MainLoopDelay:
 ; rcall DbgLed
-	ldd 24, Y + MemMainDelayLo
-	ldd 25, Y + MemMainDelayHi
+	ldd 24, Y + moMainDelayLo
+	ldd 25, Y + moMainDelayHi
 	rcall Delay
 	rjmp MainLoop
 
@@ -840,30 +838,31 @@ ParamLoad:
 	push _EepromHi
 	movw _MemMainLo, 24
 
-	clr _EepromLo
 	clr _EepromHi
+
+	clr _EepromLo
 	movw 24, _EepromLo
 	rcall EepromRead
 	movw ZL, _MemMainLo
-	std Z + MemMainFuncSelNo, 24
+	std Z + moMainFuncSelNo, 24
 
 	inc _EepromLo
 	movw 24, _EepromLo
 	rcall EepromRead
 	movw ZL, _MemMainLo
-	std Z + MemMainDelayLo, 24
+	std Z + moMainDelayLo, 24
 
 	inc _EepromLo
 	movw 24, _EepromLo
 	rcall EepromRead
 	movw ZL, _MemMainLo
-	std Z + MemMainDelayHi, 24
+	std Z + moMainDelayHi, 24
 
 	inc _EepromLo
 	movw 24, _EepromLo
 	rcall EepromRead
 	movw ZL, _MemMainLo
-	std Z + MemMainBrightness, 24
+	std Z + moMainBrightness, 24
 
 	pop _EepromHi
 	pop _EepromLo
@@ -881,29 +880,30 @@ ParamSave:
 	push _EepromHi
 	movw _MemMainLo, 24
 
-	clr _EepromLo
 	clr _EepromHi
+
+	clr _EepromLo
 	movw 24, _EepromLo
 	movw ZL, _MemMainLo
-	ldd 22, Z + MemMainFuncSelNo
+	ldd 22, Z + moMainFuncSelNo
 	rcall EepromWrite
 
 	inc _EepromLo
 	movw 24, _EepromLo
 	movw ZL, _MemMainLo
-	ldd 22, Z + MemMainDelayLo
+	ldd 22, Z + moMainDelayLo
 	rcall EepromWrite
 
 	inc _EepromLo
 	movw 24, _EepromLo
 	movw ZL, _MemMainLo
-	ldd 22, Z + MemMainDelayHi
+	ldd 22, Z + moMainDelayHi
 	rcall EepromWrite
 
 	inc _EepromLo
 	movw 24, _EepromLo
 	movw ZL, _MemMainLo
-	ldd 22, Z + MemMainBrightness
+	ldd 22, Z + moMainBrightness
 	rcall EepromWrite
 
 	pop _EepromHi
@@ -918,30 +918,30 @@ ParamSave:
 ParamInit:
 	movw ZL, 24
 	ldi 24, 0x04
-	std Z + MemMainFuncSelNo, 24
+	std Z + moMainFuncSelNo, 24
 	ldi 24, 0x00
-	std Z + MemMainDelayLo, 24
+	std Z + moMainDelayLo, 24
 	ldi 24, 0x02
-	std Z + MemMainDelayHi, 24
+	std Z + moMainDelayHi, 24
 	ldi 24, 0x7f
-	std Z + MemMainBrightness, 24
+	std Z + moMainBrightness, 24
 	ret
-	
+
 ;;; ========================================================================
 ;;; ParamFix(MemMain*)
 ;;; ========================================================================
 ParamFix:
 	movw ZL, 24
-	ldd 24, Z + MemMainFuncSelNo
+	ldd 24, Z + moMainFuncSelNo
 	cpi 24, MainFuncTableSize
 	brcc ParamFixErr
 
-	ldd 24, Z + MemMainDelayLo
-	ldd 25, Z + MemMainDelayHi
+	ldd 24, Z + moMainDelayLo
+	ldd 25, Z + moMainDelayHi
 
 	clr 22
 	ldi 23, 8
-ParamFix1b:	
+ParamFix1b:
 	lsl 24
 	brcc ParamFix1a
 	inc 22
@@ -958,18 +958,18 @@ ParamFix2a:
 	brne ParamFix2b
 
 	cpi 22, 0x01
-	brne ParamFixErr	
+	brne ParamFixErr
 
-	ldd 24, Z + MemMainBrightness
+	ldd 24, Z + moMainBrightness
 	mov 23, 24
 	andi 23, 0x0f
 	cpi 23, 0x0f
 	brne ParamFixErr
-	cpi 24, 0x2f
+	cpi 24, 0x1f
 	brcs ParamFixErr
 
 	ret
-	
+
 ParamFixErr:
 	push _MemMainLo
 	push _MemMainHi
@@ -981,12 +981,12 @@ ParamFixErr:
 	pop _MemMainHi
 	pop _MemMainLo
 	ret
-	
+
 ;;; ========================================================================
 ;;; void SendDataRGB(unsigned char r, unsigned char g, unsigned char b)
 ;;; ========================================================================
 	.global SendDataRGB
-SendDataRGB:	
+SendDataRGB:
 	push 16
 	push 20
 	push 24
@@ -1000,11 +1000,11 @@ SendDataRGB:
 	rcall SendDataByte
 	pop 24
 	rcall SendDataByte
-	
+
 	out SREG, 16
 	pop 16
 	ret
-	
+
 ;;; ========================================================================
 ;;; void SendDataByte(unsigned char byte)
 ;;; ========================================================================
@@ -1038,6 +1038,8 @@ B0:
 	nops 4
 .elseif MCUclock == 20000000 ; 20MHz:5
 	nops 5
+.else
+	.error
 .endif
 
 	cbi LedPrt, LedIdx	; 2
@@ -1067,7 +1069,7 @@ B1:
 .endif
 ;;; WS2812
 ;;; ========================================================================
-	
+
 ;;; ========================================================================
 ;;; WS2812B
 ;;; ========================================================================
@@ -1111,7 +1113,7 @@ B1:
 .endif
 ;;; WS2812B
 ;;; ========================================================================
-	
+
 BitDec:	dec _BitCnt		; 1
 	brne BitLoop		; 2|1
 
@@ -1129,9 +1131,9 @@ EepromRead:
 	out EEARL, 24
 	sbi EECR, EECR_EERE
 	in 24, EEDR
-	
+
 	ret
-	
+
 ;;; ========================================================================
 ;;; void EepromWrite(addr*, byte)
 ;;; ========================================================================
@@ -1146,7 +1148,7 @@ EepromWrite:
 	sbi EECR, EECR_EEMPE
 	sbi EECR, EECR_EEPE
 
-	ret	
+	ret
 
 ;;; ========================================================================
 ;;; unsigned char Rnd()
@@ -1160,14 +1162,14 @@ EepromWrite:
 	Tmp = 23
 	Cnt = 20
 Rnd:				; LFSR 32bit
-	ldiw ZL, MemMain + MemMainRndVal
+	ldiw ZL, maMain + moMainRndVal
 	ldd LL, Z+0
 	ldd LH, Z+1
 	ldd HL, Z+2
 	ldd HH, Z+3
 
 	ldi Cnt, 8
-Rnd1:	
+Rnd1:
 	mov FB, LL		; tap 32
 
 	bst LL, 2		; tap 30
@@ -1190,7 +1192,7 @@ Rnd1:
 
 	dec Cnt
 	brne Rnd1
-	
+
 	std Z+0, LL
 	std Z+1, LH
 	std Z+2, HL
@@ -1236,7 +1238,7 @@ DbgLed:
 	mov 16, YL
 	rcall DbgLedByte
 
-	ldd 16, Y + MemMainFuncSelNo
+	ldd 16, Y + moMainFuncSelNo
 	rcall DbgLedByte
 
 	ldiw 24, 0x0000
@@ -1244,19 +1246,19 @@ DbgLed:
 	mov 16, 24
 	rcall DbgLedByte
 
-	ldd 16, Y + MemMainBrightness
+	ldd 16, Y + moMainBrightness
 	rcall DbgLedByte
 
 	ldiw 24, 0x0003
 	rcall EepromRead
 	mov 16, 24
 	rcall DbgLedByte
-	
+
 	pop 17
 	pop 16
 	ret
 
-DbgLedByte:	
+DbgLedByte:
 	ldi 17, 0x08
 DbgLedByte1:
 	rcall DbgLedBit
@@ -1264,22 +1266,22 @@ DbgLedByte1:
 	brne DbgLedByte1
 
 	ret
-	
+
 DbgLedBit:
 	lsl 16
 	brcc DbgLedBit0
-DbgLedBit1:	
+DbgLedBit1:
 	ldi 24, 0x0f
 	ldi 22, 0x00
 	ldi 20, 0x00
 	rjmp SendDataRGB
-DbgLedBit0:	
+DbgLedBit0:
 	ldi 24, 0x00
 	ldi 22, 0x00
 	ldi 20, 0x0f
 	rjmp SendDataRGB
 .endif
-	
+
 ;;; ========================================================================
 ;;; DbgWord, DbgByte
 ;;; ========================================================================
@@ -1328,7 +1330,7 @@ DbgBit1:
 	nop
 	ret
 .endif
-	
+
 ;;; ========================================================================
 ;;; EOF
 ;;; ========================================================================

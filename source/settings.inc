@@ -36,7 +36,7 @@
 	dbg \pulse-1
 	.endif
 	.endm
-	
+
 ;;; ========================================================================
 ;;; Registers
 ;;; ========================================================================
@@ -51,38 +51,36 @@
 ;;; SRAM
 ;;; ========================================================================
 
-	MemTickCnt = RAMSTART	;
-	MemTickCntNow  = 0	; current GetTickCnt call
-	memTickCntPrev = 2	; previous GetTickCnt call
+	maTickCnt = RAMSTART	;
+	maTickCntNow  = 0	; current GetTickCnt call
+	maTickCntPrev = 2	; previous GetTickCnt call
 
-	MemInt0 = MemTickCnt + 4
-	MemInt0State = 0	; state
-	MemInt0B0    = 1	; IR read bytes 0..3
-	MemInt0B1    = 2
-	MemInt0B2    = 3
-	MemInt0B3    = 4
+	maInt0 = maTickCnt + 4
+	moInt0State = 0	; state
+	moInt0B0    = 1	; IR read bytes 0..3
+	moInt0B1    = 2
+	moInt0B2    = 3
+	moInt0B3    = 4
 
-	MemMain = MemInt0 + 5
-	MemMainRndVal = 0
-	MemMainFuncSelLo = 4
-	MemMainFuncSelHi = 5
-	MemMainFuncSelNo = 6
-	MemMainFuncSelNoPrev = 7
-	MemMainDelayLo = 8
-	MemMainDelayHi = 9
-	MemMainBrightness = 10
+	maMain = maInt0 + 5
+	moMainRndVal = 0
+	moMainFuncSelNo = 4	; [0..MainFuncTableSize-1]
+	moMainFuncSelNoPrev = 5
+	moMainDelayLo = 6	; [0x0040..0x8000, */ 2]
+	moMainDelayHi = 7
+	moMainBrightness = 8	; [0x1f..0xff, +- 0x10]
 
-	MemLedMatrixAddr = MemMain + 11 ; C++ object address -- LAST ENTRY!!!
+	maLedMatrixAddr = maMain + 9 ; C++ object address -- LAST ENTRY!!!
 
 ;;; ========================================================================
 ;;; EEPROM
 ;;; ========================================================================
 
-	EepromCmd        = 0
-	EepromDelayLo    = 1
-	EepromDelayHi    = 2
-	EepromBrightness = 3
-	
+	eaSelNo      = 0	; [0..MainFuncTableSize-1]
+	eaDelayLo    = 1	; [0x0040..0x8000, */ 2]
+	eaDelayHi    = 2
+	eaBrightness = 3	; [0x1f..0xff, += 0x10]
+
 ;;; ========================================================================
 ;;; EOF
 ;;; ========================================================================
