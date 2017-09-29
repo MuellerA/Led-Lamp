@@ -20,13 +20,13 @@
 ;;; ========================================================================
 
 	.macro ldiw reg val
-	ldi \reg, lo8(\val)
-	ldi \reg+1, hi8(\val)
+	ldi (\reg), lo8(\val)
+	ldi (\reg+1), hi8(\val)
 	.endm
 
 	.macro ldip reg val
-	ldi \reg, pm_lo8(\val)
-	ldi \reg+1, pm_hi8(\val)
+	ldi (\reg), pm_lo8(\val)
+	ldi (\reg+1), pm_hi8(\val)
 	.endm
 
 	.macro dbg pulse=1
