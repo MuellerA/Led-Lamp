@@ -1,0 +1,12 @@
+[Title]
+Holder for Four WS2812 LED 5050 RGB 8x8 LED Modules
+
+[Summary]
+Four 8x8 Boards are much cheaper than one 16x16 Board.
+
+[Tags]
+
+CJMCU-8x8 LED OpenSCAD parametric RGB WS2811 WS2812 WS2812B
+
+[Design Tools]
+OpenSCAD

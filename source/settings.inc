@@ -79,7 +79,7 @@
 	eaSelNo      = 0	; [0..MainFuncTableSize-1]
 	eaDelayLo    = 1	; [0x0040..0x8000, */ 2]
 	eaDelayHi    = 2
-	eaBrightness = 3	; [0x1f..0xff, += 0x10]
+	eaBrightness = 3	; [0x1f..0xff, +- 0x10]
 
 ;;; ========================================================================
 ;;; EOF

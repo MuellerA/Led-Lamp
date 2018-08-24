@@ -831,11 +831,16 @@ MultiCol2:
 	_MemMainHi = 13
 	_EepromLo = 14
 	_EepromHi = 15
+        _SREG = 16
 ParamLoad:
 	push _MemMainLo
 	push _MemMainHi
 	push _EepromLo
 	push _EepromHi
+        push _SREG
+        in _SREG, SREG
+        
+        cli                                     ; safe EEPROM access
 	movw _MemMainLo, 24
 
 	clr _EepromHi
@@ -864,6 +869,8 @@ ParamLoad:
 	movw ZL, _MemMainLo
 	std Z + moMainBrightness, 24
 
+        out SREG, _SREG
+        pop _SREG
 	pop _EepromHi
 	pop _EepromLo
 	pop _MemMainHi
@@ -878,6 +885,10 @@ ParamSave:
 	push _MemMainHi
 	push _EepromLo
 	push _EepromHi
+        push _SREG
+        in _SREG, SREG
+
+        cli                                     ; safe EEPROM access
 	movw _MemMainLo, 24
 
 	clr _EepromHi
@@ -906,6 +917,8 @@ ParamSave:
 	ldd 22, Z + moMainBrightness
 	rcall EepromWrite
 
+        out SREG, _SREG
+        pop _SREG
 	pop _EepromHi
 	pop _EepromLo
 	pop _MemMainHi
